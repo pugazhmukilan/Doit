@@ -1,12 +1,11 @@
+import "package:Doit/addtask.dart";
+import "package:Doit/constants.dart";
 import 'package:avatar_glow/avatar_glow.dart';
-import "package:doit/addtask.dart";
-import "package:doit/constants.dart";
 import "package:flutter/material.dart";
 
 import "congrats.dart";
-import "main.dart";
 import "task.dart";
-List<Task> shownlist=all;
+ List<Map<String, dynamic>> shownlist=allTasks;
 String pressed = "all";
 
 class Home extends StatefulWidget {
@@ -23,40 +22,18 @@ class _HomeState extends State<Home> {
   
   @override
   void initState(){
-    print("shown list============================${shownlist}");
     super.initState();
+    print("shown list============================${shownlist}");
+     
     
-    loadData();
     
     
 
   }
-  Future<void> loadData() async {
-    totaltask = prefs.getInt("TotalTask");
-    print("retrived number is==================================================== ${totaltask}");
-    all = await getObjectList(["important", "nonimportant"]);
-    important = await getObjectList(["important"]);
-    nonimportant = await getObjectList(["nonimportant"]);
-    done = await getObjectList(["done"]);
+  //here there should be the function which retrives the  json file
+  //and segriate 
 
-    setState(() {
-      if (pressed == "all"){
-        shownlist = all;
-      }
-      if (pressed == "important"){
-        shownlist = important;
-        print("from initstate");
-        print(important[0].name);
-      }
-      if (pressed == "nonimportant"){
-        shownlist = nonimportant;
-      }
-      if (pressed == "done"){
-        shownlist = done;
-      }
-      
-    });
-  }
+ 
   
   @override
   Widget build(BuildContext context) {
@@ -77,7 +54,8 @@ class _HomeState extends State<Home> {
             .then((result) {
           if (result != null && result is bool && result) {
             // Task was added, update the UI
-            loadData();
+            fetchData();
+            
            
           }
         });
@@ -168,16 +146,39 @@ class _HomeState extends State<Home> {
                 onButtonPressed: (buttonName) {
                         setState(() {
                           if (buttonName == "AlL") {
-                            shownlist = all;
+                            shownlist = allTasks;
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
                             print(shownlist);
+                            
                           } else if (buttonName == "IMPOrTAnT") {
-                            shownlist = important;
-                            print(shownlist[0].name);
+                            
+                            shownlist = importantTasks;
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print(shownlist);
+                            
                           } else if (buttonName == "!IMPOrTAnT") {
-                            shownlist = nonimportant;
+                            
+
+                            shownlist = nonImportantTasks;
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
                             print(shownlist);
                           } else if (buttonName == "DoNe") {
-                            shownlist = done;
+                            
+
+                            shownlist = doneTasks;
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
                             print(shownlist);
                           }
                         });}
@@ -193,7 +194,9 @@ class _HomeState extends State<Home> {
                     
                     GestureDetector(
                       onLongPress: (){
-                        
+                       
+                        updateTaskStatusByName(shownlist[i]["name"], true);
+
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top:10),
@@ -213,9 +216,9 @@ class _HomeState extends State<Home> {
                                 )),
                               Expanded(
                                 flex:4,
-                                child: Container(child: Text(shownlist[i].name,style:TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 15,fontWeight: FontWeight.w800,color:Kgreencolor)))),
+                                child: Container(child: Text(shownlist[i]['name'],style:TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 15,fontWeight: FontWeight.w800,color:Kgreencolor)))),
                               
-                              if (shownlist[i].important)
+                              if (shownlist[i]['important']==true)
                               Expanded(
                                 
                                 child: Container(
@@ -326,3 +329,19 @@ class _ButtonRowState extends State<ButtonRow> {
 }
 
 
+
+
+  Future<void> fetchData() async {
+   allTasks = await  getTasksWithStatusFalse();
+   importantTasks = await getImportantTasks();
+   nonImportantTasks = await getNonImportantTasks();
+   doneTasks = await getDoneTasks();
+
+  // Print or use the data as needed
+  print('All Tasks: $allTasks');
+  print('Important Tasks: $importantTasks');
+  print('Non-Important Tasks: $nonImportantTasks');
+  print('Done Tasks: $doneTasks');
+
+  
+}

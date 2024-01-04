@@ -14,6 +14,7 @@ void main()async {
   addObjectToList("important", t2); 
   addObjectToList("nonimportant", t3); 
   addObjectToList("nonimportant", t4); */
+  await fetchData();
   runApp( MainApp());
 }
 

@@ -1,4 +1,4 @@
-name: doit
+name: "Doit"
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -25,4 +25,5 @@ flutter:
         - asset: fonts/MajorMonoDisplay-Regular.ttf
 
   assets:
-    - assets/      
+    - assets/
+    - assets/task.json

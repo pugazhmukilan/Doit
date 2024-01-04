@@ -1,9 +1,6 @@
+import "package:Doit/constants.dart";
 import 'package:avatar_glow/avatar_glow.dart';
-import "package:doit/constants.dart";
-import "package:doit/task.dart";
 import "package:flutter/material.dart";
-
-import "main.dart";
 
 bool imp = false;
 late BuildContext _context;
@@ -181,7 +178,7 @@ class _AddtaskState extends State<Addtask> {
                           glowCount: 2,
                           child: GestureDetector(
                                 onTap: () async {
-                  await _handleAddTask(number);
+                  
                   setState(() {
                     // Update the state synchronously after the asynchronous work is done
                   });
@@ -223,30 +220,3 @@ class _AddtaskState extends State<Addtask> {
 }
 
 
-// Add this method outside the build method
-Future<void> _handleAddTask(int number) async {
-  Task mytask = Task(
-    name: tasknamecontroller.text,
-    information: taskinfocontroller.text,
-    important: imp,
-  );
-  tasknamecontroller.clear();
-  taskinfocontroller.clear();
-  imp=false;
-
-  if (mytask.important) {
-    
-    addObjectToList("important", mytask);
-    
-    prefs.setInt("TotalTask", number+1);
-    print("added the number ===================================================${number+1}");
-   
-    Navigator.pop(_context, true);
-  } else {
-    addObjectToList("nonimportant", mytask);
-    prefs.setInt("TotalTask", number+1);
-    print("added the number ==================================================${number+1}");
-    Navigator.pop(_context, true);
-  }
-
-}
