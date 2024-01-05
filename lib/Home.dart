@@ -4,9 +4,11 @@ import 'package:avatar_glow/avatar_glow.dart';
 import "package:flutter/material.dart";
 
 import "congrats.dart";
-import "task.dart";
- List<Map<String, dynamic>> shownlist=allTasks;
-String pressed = "all";
+import "main.dart";
+ List<Map<String, dynamic>> shownlist=[];
+
+String selectedButton= 'AlL';
+late int total = 0 ;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,22 +18,26 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isfinished = false;
+  
 
   
   
   @override
   void initState(){
     super.initState();
-    print("shown list============================${shownlist}");
-     
-    
-    
-    
-
-  }
+    fetchdata();
+   
+     }
   //here there should be the function which retrives the  json file
   //and segriate 
+  Future<void> fetchdata()async{
+    print("init state methos id going on=======================");
+    await getdata("AlL");
+    total = await prefs.getInt("total")!.toInt();
+    setState(() {
+      
+    });
+  }
 
  
   
@@ -50,15 +56,45 @@ class _HomeState extends State<Home> {
         glowCount: 1,
         child: GestureDetector(
           onTapDown: (details)  {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Addtask(number:totaltask!.toInt())))
-            .then((result) {
-          if (result != null && result is bool && result) {
+            
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Addtask(number:total)))
+            .then((result) async{
+          
             // Task was added, update the UI
-            fetchData();
+            print("bacck operation for update=====================================");
+            total = await prefs.getInt("total")!.toInt();
+            if (selectedButton == "AlL") {
+                            shownlist = await db.getallUndoneTasks();
+                            
+                            
+                          } else if (selectedButton == "IMPOrTAnT") {
+                            
+                            shownlist = await db.getImportantTasks();
+                            
+                            
+                          } else if (selectedButton == "!IMPOrTAnT") {
+                            
+
+                            shownlist = await db.getNonImportantTasks();
+                            
+                          } else if (selectedButton == "DoNe") {
+                            
+
+                            shownlist = await db.getDoneTasks();
+                            
+                          }
+                
+                        setState(() {
+                          print(selectedButton);
+                          
+                        });
+            setState(() {
+              
+            });
             
            
           }
-        });
+        );
           },
           
           
@@ -123,9 +159,9 @@ class _HomeState extends State<Home> {
                              children: [
                                Center(child: GestureDetector(
                                 onLongPress: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => Congrats(task:totaltask!.toInt()))));
+                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => Congrats(task:total))));
                                 },
-                                child: Text("${totaltask}",style: Kgreenumber,))),
+                                child: Text("${total}",style: Kgreenumber,))),
                               Text("TASK COMPLETED",style: Ksmallgreenfonts,)
                              ],
                            ))
@@ -137,16 +173,16 @@ class _HomeState extends State<Home> {
                            ),
                         
                   ButtonRow(
+                def:selectedButton,
                 listname: cat,
                 height: 50,
                 whenselected: Color.fromARGB(255, 26, 255, 186),
                 whennotselected: const Color.fromARGB(255, 43, 43, 43),
                 textselected: Colors.black,
                 textnotselected: Color.fromARGB(255, 136, 136, 136),
-                onButtonPressed: (buttonName) {
-                        setState(() {
-                          if (buttonName == "AlL") {
-                            shownlist = allTasks;
+                onButtonPressed: (buttonName) async{
+                       if (buttonName == "AlL") {
+                            shownlist = await db.getallUndoneTasks();
                             print("showing the data of ======================ALL TASK ==============================");
                             print("showing the data of ======================ALL TASK ==============================");
                             print("showing the data of ======================ALL TASK ==============================");
@@ -155,7 +191,7 @@ class _HomeState extends State<Home> {
                             
                           } else if (buttonName == "IMPOrTAnT") {
                             
-                            shownlist = importantTasks;
+                            shownlist = await db.getImportantTasks();
                             print("showing the data of ======================IMPORTANT==============================");
                             print("showing the data of ======================IMPORTANT==============================");
                             print("showing the data of ======================IMPORTANT==============================");
@@ -165,7 +201,7 @@ class _HomeState extends State<Home> {
                           } else if (buttonName == "!IMPOrTAnT") {
                             
 
-                            shownlist = nonImportantTasks;
+                            shownlist = await db.getNonImportantTasks();
                             print("showing the data of ======================NON IMPORTANT==============================");
                             print("showing the data of ======================NON IMPORTANT==============================");
                             print("showing the data of ======================NON IMPORTANT==============================");
@@ -174,18 +210,24 @@ class _HomeState extends State<Home> {
                           } else if (buttonName == "DoNe") {
                             
 
-                            shownlist = doneTasks;
+                            shownlist = await db.getDoneTasks();
                             print("showing the data of ======================DONE==============================");
                             print("showing the data of ======================DONE==============================");
                             print("showing the data of ======================DONE==============================");
                             print("showing the data of ======================DONE==============================");
                             print(shownlist);
                           }
-                        });}
+                        setState(() {
+                          
+                        });
+                        
+                        
+                        }
+                        
                 
                           ),
-                        
-                          SingleChildScrollView(
+                      //tasklist(mainlist: shownlist),
+                      SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
                         
@@ -193,9 +235,54 @@ class _HomeState extends State<Home> {
                     for(int i=0;i<shownlist.length;i++)
                     
                     GestureDetector(
-                      onLongPress: (){
+                        onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: Colors.black,
+                            title: Text(shownlist[i]['name'],style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 20,fontWeight:FontWeight.w800,color: Kgreencolor),),
+                            content: Text(shownlist[i]['information']==""? "No information avaiable":shownlist[i]['information'],style: TextStyle(fontFamily: "inter",fontSize: 15,fontWeight:FontWeight.w400,color:Colors.grey),),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK',style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 18,fontWeight:FontWeight.w500,color:Color.fromARGB(255, 248, 200, 24)),),
+                              ),
+                              TextButton(
+                                onPressed: () async{
+                                  await db.deleteTaskByName(shownlist[i]['name']);
+                                  Navigator.of(context).pop();
+                                  await getdata(selectedButton);
+                                  setState(() {
+                                    
+                                  });
+                                },
+                                child: Text('Delete',style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 18,fontWeight:FontWeight.w500,color:Color.fromARGB(255, 248, 200, 24)),),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+
+
+
+
+
+
+      onHorizontalDragEnd: (details) {
+        
+      },
+                      onDoubleTap: ()async{
                        
-                        updateTaskStatusByName(shownlist[i]["name"], true);
+                        await db.updatemakeitdone(shownlist[i]['name']);
+                        print("printing  in the dsouble tapp");
+                        print(selectedButton);
+                        await getdata(selectedButton);
+                        setState(() {
+                          print("done the updation ================================");
+                        });
+
 
                       },
                       child: Padding(
@@ -218,7 +305,7 @@ class _HomeState extends State<Home> {
                                 flex:4,
                                 child: Container(child: Text(shownlist[i]['name'],style:TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 15,fontWeight: FontWeight.w800,color:Kgreencolor)))),
                               
-                              if (shownlist[i]['important']==true)
+                              if (shownlist[i]['important']==1)
                               Expanded(
                                 
                                 child: Container(
@@ -238,6 +325,8 @@ class _HomeState extends State<Home> {
                 ),
                         
                           ),
+                        
+                          
                   
                 ],
                 ),
@@ -249,8 +338,84 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+
+
+
+class tasklist extends StatefulWidget {
+  List<Map<String, dynamic>> mainlist;
+  tasklist({super.key,required this.mainlist});
+
+  @override
+  State<tasklist> createState() => _tasklistState(mainlist:mainlist);
+}
+
+class _tasklistState extends State<tasklist> {
+
+  List<Map<String, dynamic>> mainlist;
+  _tasklistState({required this.mainlist});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                        
+                  children: [
+                    for(int i=0;i<mainlist.length;i++)
+                    
+                    GestureDetector(
+                      onLongPress: (){
+                       
+                        
+
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:10),
+                        child: Container(
+                          height:60,
+                          width:double.infinity,
+                          decoration: BoxDecoration(color:Color.fromARGB(255, 44, 44, 44),
+                          borderRadius: BorderRadius.circular(20)),
+                          
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex:1,
+                                child: Container(
+                    
+                                  child:Icon(Icons.done,color: Kgreencolor.withOpacity(0.7),)
+                                )),
+                              Expanded(
+                                flex:4,
+                                child: Container(child: Text(mainlist[i]['name'],style:TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 15,fontWeight: FontWeight.w800,color:Kgreencolor)))),
+                              
+                              if (mainlist[i]['important']==true)
+                              Expanded(
+                                
+                                child: Container(
+                                 
+                                  child: Icon(Icons.star,color: Colors.yellow,),
+                              
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                        
+                  ],
+                  
+                ),
+                        
+                          );
+  }
+}
 class ButtonRow extends StatefulWidget {
   final List<String> listname;
+  final String def ;
   final double height;
   final Color whenselected;
   final Color whennotselected;
@@ -259,6 +424,7 @@ class ButtonRow extends StatefulWidget {
   final Function(String) onButtonPressed;
 
   ButtonRow({
+    required this.def,
     required this.listname,
     required this.height,
     required this.whenselected,
@@ -269,12 +435,20 @@ class ButtonRow extends StatefulWidget {
   });
 
   @override
-  _ButtonRowState createState() => _ButtonRowState();
+  _ButtonRowState createState() => _ButtonRowState(def:def);
 }
 
 class _ButtonRowState extends State<ButtonRow> {
-  String selectedButton = "AlL";
+  String def;
+  _ButtonRowState({required this.def});
+  
   bool isSelected = true; 
+  @override
+  void initState(){
+    super.initState();
+    selectedButton = "AlL";
+    selectedButton = def;
+  }
   //String buttonName = "AlL";// Default selected button
 
   void _handleButtonPress(String buttonName) {
@@ -284,6 +458,7 @@ class _ButtonRowState extends State<ButtonRow> {
       print(buttonName);
     });
     widget.onButtonPressed(buttonName);
+    //getdata(buttonName);
   }
 
   @override
@@ -330,18 +505,44 @@ class _ButtonRowState extends State<ButtonRow> {
 
 
 
+Future<void> getdata(String buttonName)async{
+if (buttonName == "AlL") {
+                            shownlist = await db.getallUndoneTasks();
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print("showing the data of ======================ALL TASK ==============================");
+                            print(shownlist);
+                            
+                          } else if (buttonName == "IMPOrTAnT") {
+                            
+                            shownlist = await db.getImportantTasks();
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print("showing the data of ======================IMPORTANT==============================");
+                            print(shownlist);
+                            
+                          } else if (buttonName == "!IMPOrTAnT") {
+                            
 
-  Future<void> fetchData() async {
-   allTasks = await  getTasksWithStatusFalse();
-   importantTasks = await getImportantTasks();
-   nonImportantTasks = await getNonImportantTasks();
-   doneTasks = await getDoneTasks();
+                            shownlist = await db.getNonImportantTasks();
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print("showing the data of ======================NON IMPORTANT==============================");
+                            print(shownlist);
+                          } else if (buttonName == "DoNe") {
+                            
 
-  // Print or use the data as needed
-  print('All Tasks: $allTasks');
-  print('Important Tasks: $importantTasks');
-  print('Non-Important Tasks: $nonImportantTasks');
-  print('Done Tasks: $doneTasks');
+                            shownlist = await db.getDoneTasks();
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
+                            print("showing the data of ======================DONE==============================");
+                            print(shownlist);
+                          }
+                          
 
   
-}
+                        }

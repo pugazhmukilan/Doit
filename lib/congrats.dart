@@ -1,3 +1,4 @@
+import "package:Doit/constants.dart";
 import "package:flutter/material.dart";
 class Congrats extends StatefulWidget {
   int task = 0;
@@ -8,7 +9,7 @@ class Congrats extends StatefulWidget {
 }
 
 class _CongratsState extends State<Congrats> {
-  int task = 0;
+  int task ;
   _CongratsState({required this.task});
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class _CongratsState extends State<Congrats> {
             fit: BoxFit.cover,
           ),
       ),
+      child: Center(child: Expanded(child: Text("${task}",style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 120,color: Kgreencolor,fontWeight: FontWeight.w900),))),
     ));
   }
 }

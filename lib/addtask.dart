@@ -1,7 +1,9 @@
 import "package:Doit/constants.dart";
+import "package:Doit/task.dart";
 import 'package:avatar_glow/avatar_glow.dart';
 import "package:flutter/material.dart";
 
+import "main.dart";
 bool imp = false;
 late BuildContext _context;
 TextEditingController tasknamecontroller = TextEditingController();
@@ -178,10 +180,36 @@ class _AddtaskState extends State<Addtask> {
                           glowCount: 2,
                           child: GestureDetector(
                                 onTap: () async {
+                                  Task newTask = Task(name: tasknamecontroller.text, information: taskinfocontroller.text, important: imp, status: false);
+                    Map<String, dynamic> taskMap = newTask.toJson();
+
+
+                    //  INSERTING IN THE DATABASE
+                    await db.insertTask(taskMap);
+                    FocusScope.of(context).unfocus();
+                    tasknamecontroller.clear();
+                    taskinfocontroller.clear();
+                    print(number+1);
+
+                    prefs.setInt("total",number+1);
+                    print(await prefs.getInt("total"));
+                    
                   
                   setState(() {
-                    // Update the state synchronously after the asynchronous work is done
-                  });
+                    
+                   final snackBar = SnackBar(
+              content: Text('Task added'),
+              duration: Duration(seconds: 2),
+            );
+            // ignore: use_build_context_synchronously
+            
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              snackBar,
+            );});
+                   print("task inserted successfully=========================================================");
+                    print(await db.getImportantTasks());
+
                 },
                 
                 child: Container(
