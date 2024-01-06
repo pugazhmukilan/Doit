@@ -12,6 +12,7 @@ void main()async {
   prefs=await SharedPreferences.getInstance();
   
   
+  
   /*Task newTask = Task(
   name: 'New Task',
   information: 'Some information about the task',
@@ -124,4 +125,32 @@ class DBHelper {
     final Database db = await database;
     await db.delete('todo', where: 'name = ?', whereArgs: [taskName]);
   }
+  Future<void> deleteAllDoneTask() async {
+    final Database db = await database;
+    await db.delete('todo', where: 'status = ?', whereArgs: [1]);
+  }
+  Future<void> deleteAllData() async {
+  // Ensure that the database is open
+  if (_database == null || !_database!.isOpen) {
+    // Open the database if not already open
+    _database = await openDatabase('doit.db');
+  }
+
+  // Specify the table name
+  String tableName = 'todo';
+
+  // Use the delete method to remove all rows from the table
+  await _database!.delete(tableName);
+
+  print('All data deleted from the table: $tableName');
+}
+
+
+  Future<void> ResetAll()async{
+    prefs.setInt("complete",0);
+    prefs.setInt("total",0);
+    await db.deleteAllData();
+  }
+
+
 }

@@ -189,10 +189,11 @@ class _AddtaskState extends State<Addtask> {
                     FocusScope.of(context).unfocus();
                     tasknamecontroller.clear();
                     taskinfocontroller.clear();
-                    print(number+1);
+                    number++;
+                    //print(number);
 
-                    prefs.setInt("total",number+1);
-                    print(await prefs.getInt("total"));
+                    prefs.setInt("total",number);
+                    //print(await prefs.getInt("total"));
                     
                   
                   setState(() {
@@ -207,8 +208,8 @@ class _AddtaskState extends State<Addtask> {
             ScaffoldMessenger.of(context).showSnackBar(
               snackBar,
             );});
-                   print("task inserted successfully=========================================================");
-                    print(await db.getImportantTasks());
+                   //print("task inserted successfully=========================================================");
+                   // print(await db.getImportantTasks());
 
                 },
                 

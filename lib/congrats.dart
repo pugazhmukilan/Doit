@@ -23,7 +23,7 @@ class _CongratsState extends State<Congrats> {
             fit: BoxFit.cover,
           ),
       ),
-      child: Center(child: Expanded(child: Text("${task}",style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 120,color: Kgreencolor,fontWeight: FontWeight.w900),))),
+      child: Center(child: Text("${task}",style: TextStyle(fontFamily: "MajorMonoDisplay",fontSize: 120,color: Kgreencolor,fontWeight: FontWeight.w900),)),
     ));
   }
 }
